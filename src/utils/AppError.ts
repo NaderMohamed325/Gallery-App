@@ -1,3 +1,5 @@
+import { error } from "console";
+
 class AppError extends Error {
     public statusCode: number;
     public status: string;
@@ -11,6 +13,7 @@ class AppError extends Error {
         this.isOperational = true;
 
         Error.captureStackTrace(this, this.constructor);
+     
     }
 }
 
