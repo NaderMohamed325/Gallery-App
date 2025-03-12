@@ -4,6 +4,7 @@ import { User, userZodSchema } from '../models/userModel';
 
 const loginViewer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const errors = null;
+
   res.render('home', { errors });
 });
 
@@ -60,4 +61,20 @@ const registerUser = catchAsync(async (req: Request, res: Response, next: NextFu
   res.render('register', { errors });
 });
 
-export { loginViewer, registerViewer, registerUser };
+const Login = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  let errors: string[] = [];
+  if (!email || !password) {
+    errors.push('Please fill the form');
+    return res.render('home', { errors });
+  }
+  const user = await User.find({ email, password });
+  if (!user) {
+    errors.push('Invalid Password or email');
+    return res.render('home', { errors });
+  }
+  req.session.isAuthenticated = true;
+  return res.redirect('/api/v1/dashboard');
+});
+
+export { loginViewer, registerViewer, registerUser, Login };
