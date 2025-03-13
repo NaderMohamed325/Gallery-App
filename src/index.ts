@@ -11,6 +11,7 @@ import AppError from './utils/AppError';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import { default as connectMongoDBSession } from 'connect-mongodb-session';
+import path from 'path';
 
 const monstore = connectMongoDBSession(session);
 mongoose.connect('mongodb://localhost:27017/Cloud').then(() => {
@@ -50,6 +51,9 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 dotenv.config();
 const port = parseInt(process.env.PORT || '3000', 10);
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(viewRouter);
 app.use(dashboardRouter);
