@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { catchAsync } from '../utils/catchAsync';
 import { User, userZodSchema } from '../models/userModel';
-
+import bcrypt from 'bcrypt';
 const loginViewer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const errors = null;
 
@@ -68,13 +68,20 @@ const Login = catchAsync(async (req: Request, res: Response, next: NextFunction)
     errors.push('Please fill the form');
     return res.render('home', { errors });
   }
-  const user = await User.find({ email, password });
+
+  const user = await User.findOne({ email });
   if (!user) {
     errors.push('Invalid Password or email');
     return res.render('home', { errors });
   }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    errors.push('Invalid Password or email');
+    return res.render('home', { errors });
+  }
+
   req.session.isAuthenticated = true;
   return res.redirect('/api/v1/dashboard');
 });
-
 export { loginViewer, registerViewer, registerUser, Login };
